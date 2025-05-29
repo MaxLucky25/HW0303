@@ -8,7 +8,8 @@ import {toObjectId} from "../utility/toObjectId";
 export class CommentQueryRepository{
     async getCommentById(id: string, userId?: string): Promise<CommentViewModel | null> {
         const comment = await CommentModel.findOne({ _id: toObjectId(id) }).exec();
-        return comment ? comment.toViewModel(userId) : null;
+        if (!comment) return null;
+        return await comment.toViewModel(userId);
     }
 
     async getCommentsByPostId(postId: string, query: any, userId?: string): Promise<any> {

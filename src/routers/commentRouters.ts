@@ -1,5 +1,5 @@
 import { Router} from 'express';
-import { authJwtMiddleware } from '../middlewares/authJwtMiddleware';
+import { authJwtMiddleware, optionalAuthJwtMiddleware } from '../middlewares/authJwtMiddleware';
 import { inputCheckErrorsMiddleware } from '../middlewares/inputCheckErrorMiddleware';
 import {commentCreateValidator, likeStatusValidator} from '../validators/commentValidators';
 import container from "../di/iosContaner";
@@ -10,7 +10,10 @@ import TYPES from '../di/types';
 const controller = container.get<CommentController>(TYPES.CommentController);
 export const commentRouter = Router();
 
-commentRouter.get('/:id',controller.getCommentById );
+commentRouter.get('/:id', 
+    optionalAuthJwtMiddleware,
+    controller.getCommentById
+);
 
 commentRouter.put('/:commentId',
     authJwtMiddleware,
@@ -18,6 +21,7 @@ commentRouter.put('/:commentId',
     inputCheckErrorsMiddleware,
     controller.updateComment
 );
+
 commentRouter.delete('/:commentId',
     authJwtMiddleware,
     controller.deleteComment
