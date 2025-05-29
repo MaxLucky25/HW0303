@@ -34,7 +34,7 @@ export class CommentService  {
         const comment = await CommentModel.findById(commentId);
         if (!comment) return 'NotFound';
 
-        const existing = await CommentLikeModel.findOne({ commentId, userId });
+        const existing = await CommentLikeModel.findOne({ commentId: comment._id.toString(), userId });
         if (existing && existing.status === likeStatus) return 'NoChange';
 
         if (existing) {
@@ -46,10 +46,15 @@ export class CommentService  {
                 await existing.save();
             }
         } else if (likeStatus !== 'None') {
-            await CommentLikeModel.create({ commentId, userId, status: likeStatus, addedAt: new Date() });
+            await CommentLikeModel.create({ 
+                commentId: comment._id.toString(), 
+                userId, 
+                status: likeStatus, 
+                addedAt: new Date() 
+            });
         }
 
-        await CommentModel.updateLikeCounters(commentId);
+        await CommentModel.updateLikeCounters(comment._id.toString());
         return 'Updated';
     }
 

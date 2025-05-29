@@ -79,17 +79,21 @@ commentSchema.statics.createComment = function(input: {
 commentSchema.statics.updateLikeCounters = async function (commentId: string) {
     const likesCount = await CommentLikeModel.countDocuments({
         commentId,
-        status: 'Like' });
+        status: 'Like'
+    });
     const dislikesCount = await CommentLikeModel.countDocuments({
         commentId,
-        status: 'Dislike' });
+        status: 'Dislike'
+    });
     await this.findByIdAndUpdate(commentId, { likesCount, dislikesCount });
 };
 
-commentSchema.methods.toViewModel = async function(userId?: string): Promise <CommentViewModel> {
+commentSchema.methods.toViewModel = async function(userId?: string): Promise<CommentViewModel> {
     const comment = this as ICommentDocument;
-    const like = userId ? await CommentLikeModel.findOne
-    ({ commentId: comment._id.toString(), userId }) : null;
+    const like = userId ? await CommentLikeModel.findOne({
+        commentId: comment._id.toString(),
+        userId
+    }) : null;
     return {
         id: this._id.toString(),
         content: this.content,
