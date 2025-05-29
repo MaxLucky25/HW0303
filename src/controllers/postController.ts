@@ -58,7 +58,8 @@ export class PostController {
 
     getCommentsByPostId = async (req: Request, res: Response) => {
         const { postId } = req.params;
-        const comments = await this.commentQueryRepository.getCommentsByPostId(postId, req.query);
+        const userId = req.userId || undefined;
+        const comments = await this.commentQueryRepository.getCommentsByPostId(postId, req.query, userId);
         if (comments === null) {
             res.sendStatus(404);
         } else {

@@ -6,12 +6,12 @@ import {toObjectId} from "../utility/toObjectId";
 
 @injectable()
 export class CommentQueryRepository{
-    async getCommentById(id: string): Promise<CommentViewModel | null> {
+    async getCommentById(id: string, userId?: string): Promise<CommentViewModel | null> {
         const comment = await CommentModel.findOne({ _id: toObjectId(id) }).exec();
-        return comment ? comment.toViewModel() : null;
+        return comment ? comment.toViewModel(userId) : null;
     }
 
-    async getCommentsByPostId(postId: string, query: any): Promise<any> {
+    async getCommentsByPostId(postId: string, query: any, userId?: string): Promise<any> {
         const { pageNumber, pageSize, sortBy, sortDirection } = getPaginationParams(query);
 
         const filter = { postId: toObjectId(postId) };
@@ -24,13 +24,13 @@ export class CommentQueryRepository{
             .limit(pageSize)
             .exec();
 
-        const items = await Promise.all(itemsDoc.map(c=>c.toViewModel()));
+        const items = await Promise.all(itemsDoc.map(c => c.toViewModel(userId)));
         return {
             pagesCount,
             page: pageNumber,
             pageSize,
             totalCount,
-            items: items
+            items
         };
     }
 }

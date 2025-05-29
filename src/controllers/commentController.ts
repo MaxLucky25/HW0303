@@ -46,7 +46,8 @@ export class CommentController {
 
     getCommentById = async (req: Request, res: Response) => {
         const { id } = req.params;
-        const comment = await this.commentQueryRepository.getCommentById(id);
+        const userId = req.userId || undefined;
+        const comment = await this.commentQueryRepository.getCommentById(id, userId);
         if (comment) {
             res.status(200).json(comment);
         } else {
