@@ -26,6 +26,7 @@ export class CommentQueryRepository{
             .exec();
 
         const items = await Promise.all(itemsDoc.map(c => c.toViewModel(userId)));
+
         return {
             pagesCount,
             page: pageNumber,
