@@ -49,7 +49,7 @@ export class CommentService  {
             await CommentLikeModel.create({ commentId, userId, status: likeStatus, addedAt: new Date() });
         }
 
-        await CommentModel.updateCommentCounters(commentId);
+        await CommentModel.updateLikeCounters(commentId);
         return 'Updated';
     }
 

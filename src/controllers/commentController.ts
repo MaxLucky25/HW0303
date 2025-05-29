@@ -65,10 +65,6 @@ export class CommentController {
             res.sendStatus(404);
             return;
         }
-        if (result === 'NoChange') {
-            res.sendStatus(204);
-            return
-        }
         res.sendStatus(204);
     };
 }

@@ -49,7 +49,7 @@ interface ICommentModelStatic extends Model<ICommentDocument> {
         postId: string;
         commentatorInfo: { userId: string; userLogin: string };
     }): ICommentDocument;
-    updateCommentCounters(commentId: string): Promise<void>;
+    updateLikeCounters(commentId: string): Promise<void>;
 }
 
 const commentSchema = new Schema<ICommentDocument, ICommentModelStatic>({
