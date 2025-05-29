@@ -2,7 +2,7 @@ import { Router} from 'express';
 import {postValidator} from '../validators/postValidators';
 import { authBasicMiddleware } from '../middlewares/authBasicMiddleware';
 import { inputCheckErrorsMiddleware } from '../middlewares/inputCheckErrorMiddleware';
-import {authJwtMiddleware} from "../middlewares/authJwtMiddleware";
+import {authJwtMiddleware, optionalAuthJwtMiddleware} from "../middlewares/authJwtMiddleware";
 import {commentCreateValidator} from "../validators/commentValidators";
 import container from "../di/iosContaner";
 import { PostController } from '../controllers/postController';
@@ -35,7 +35,10 @@ postsRouter.delete('/:id',
     controller.deletePost
 );
 
-postsRouter.get('/:postId/comments',controller.getCommentsByPostId);
+postsRouter.get('/:postId/comments',
+    optionalAuthJwtMiddleware,
+    controller.getCommentsByPostId
+);
 
 postsRouter.post('/:postId/comments',
     authJwtMiddleware,
