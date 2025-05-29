@@ -102,18 +102,16 @@ commentSchema.methods.toViewModel = async function(userId?: string): Promise<Com
     let myStatus = 'None';
     
     if (userId) {
-        console.log('Looking for like with userId:', userId, 'and commentId:', comment._id.toString());
         const like = await CommentLikeModel.findOne({
             commentId: comment._id.toString(),
             userId: userId
         });
-        console.log('Found like:', like);
         if (like) {
             myStatus = like.status;
         }
     }
 
-    const result = {
+    return {
         id: this._id.toString(),
         content: this.content,
         createdAt: this.createdAt,
@@ -124,8 +122,6 @@ commentSchema.methods.toViewModel = async function(userId?: string): Promise<Com
             myStatus: myStatus
         }
     };
-    console.log('Returning comment view model:', result);
-    return result;
 };
 
 export const CommentModel = model<ICommentDocument, ICommentModelStatic >('Comment', commentSchema);
