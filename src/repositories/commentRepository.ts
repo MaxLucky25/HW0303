@@ -16,7 +16,7 @@ export class CommentRepository  {
         });
 
         await comment.save();
-        return comment.toViewModel();
+        return comment.toViewModel(commentatorInfo.userId);
     }
 
     async update(id: string, input: CommentDto): Promise<boolean> {

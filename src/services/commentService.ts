@@ -55,6 +55,12 @@ export class CommentService  {
         }
 
         await CommentModel.updateLikeCounters(comment._id.toString());
+        
+        // Получаем обновленный комментарий для проверки
+        const updatedComment = await CommentModel.findById(commentId);
+        if (!updatedComment) return 'NotFound';
+        
+        await updatedComment.toViewModel(userId);
         return 'Updated';
     }
 

@@ -66,6 +66,13 @@ export class CommentController {
             res.sendStatus(404);
             return;
         }
+
+        const updatedComment = await this.commentQueryRepository.getCommentById(commentId, userId);
+        if (!updatedComment) {
+            res.sendStatus(404);
+            return;
+        }
+
         res.sendStatus(204);
     };
 }
