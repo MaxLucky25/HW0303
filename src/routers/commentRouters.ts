@@ -11,7 +11,7 @@ const controller = container.get<CommentController>(TYPES.CommentController);
 export const commentRouter = Router();
 
 commentRouter.get('/:id', 
-    optionalAuthJwtMiddleware,
+    authJwtMiddleware,
     controller.getCommentById
 );
 
