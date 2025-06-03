@@ -1,17 +1,6 @@
 import { model, Schema, Document, Model, Types } from "mongoose";
 import {toObjectId} from "../utility/toObjectId";
-import {CommentLikeModel} from "./commentLikeModel";
-
-export type CommentDBType = {
-    _id: Types.ObjectId;
-    content: string;
-    commentatorInfo: {
-        userId: string;
-        userLogin: string;
-    };
-    postId: Types.ObjectId;
-    createdAt: Date;
-};
+import {CommentLikeModel, LikeStatus} from "./commentLikeModel";
 
 export type CommentViewModel = {
     id: string;
@@ -58,7 +47,7 @@ const commentSchema = new Schema<ICommentDocument, ICommentModelStatic>({
         userId: { type: String, required: true },
         userLogin: { type: String, required: true },
     },
-    postId: { type: Schema.Types.ObjectId, required: true, ref: 'Post' },
+    postId: { type: Schema.Types.ObjectId, required: true,},
     createdAt: { type: Date, required: true, default: Date.now},
     likesCount: { type: Number, required: true, default: 0 },
     dislikesCount: { type: Number, required: true, default: 0 }
@@ -80,26 +69,25 @@ commentSchema.statics.updateLikeCounters = async function (commentId: string) {
     const [likesCount, dislikesCount] = await Promise.all([
         CommentLikeModel.countDocuments({
             commentId,
-            status: 'Like'
+            status: LikeStatus.Like
         }),
         CommentLikeModel.countDocuments({
             commentId,
-            status: 'Dislike'
+            status: LikeStatus.Dislike
         })
     ]);
 
-    const result = await this.findByIdAndUpdate(
+    return this.findByIdAndUpdate(
         commentId,
         { likesCount, dislikesCount },
         { new: true }
     );
 
-    return result;
 };
 
 commentSchema.methods.toViewModel = async function(userId?: string): Promise<CommentViewModel> {
     const comment = this as ICommentDocument;
-    let myStatus = 'None';
+    let myStatus = LikeStatus.None;
     
     if (userId) {
         const like = await CommentLikeModel.findOne({
@@ -107,7 +95,7 @@ commentSchema.methods.toViewModel = async function(userId?: string): Promise<Com
             userId: userId
         });
         if (like) {
-            myStatus = like.status;
+            myStatus = like.status as LikeStatus;
         }
     }
 

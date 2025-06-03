@@ -1,8 +1,9 @@
-import {Response, Request} from "express";
-import {inject, injectable } from "inversify";
+import {Request, Response} from "express";
+import {inject, injectable} from "inversify";
 import TYPES from "../di/types";
 import {CommentService} from "../services/commentService";
 import {CommentQueryRepository} from "../queryRepo/commentQueryRepository";
+import {LikeUpdateResult} from "../models/commentLikeModel";
 
 @injectable()
 export class CommentController {
@@ -62,7 +63,7 @@ export class CommentController {
 
         const result = await this.commentService.updateLikeStatus(commentId, userId, likeStatus);
 
-        if (result === 'NotFound') {
+        if (result === LikeUpdateResult.NotFound) {
             res.sendStatus(404);
             return;
         }

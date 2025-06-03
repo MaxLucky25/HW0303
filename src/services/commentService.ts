@@ -1,10 +1,10 @@
 import {CommentRepository} from "../repositories/commentRepository";
-import {CommentViewModel, CommentDto, CommentModel} from "../models/commentModel";
+import {CommentDto, CommentModel, CommentViewModel} from "../models/commentModel";
 import {inject, injectable} from "inversify";
 import TYPES from "../di/types";
 import {PostModel} from "../models/postModel";
 import {toObjectId} from "../utility/toObjectId";
-import {CommentLikeModel} from "../models/commentLikeModel";
+import {CommentLikeModel, LikeStatus, LikeUpdateResult} from "../models/commentLikeModel";
 
 @injectable()
 export class CommentService  {
@@ -30,22 +30,22 @@ export class CommentService  {
         return await this.commentRepository.delete(commentId);
     }
 
-    async updateLikeStatus(commentId: string, userId: string, likeStatus: 'Like' | 'Dislike' | 'None'): Promise<'Updated' | 'NoChange' | 'NotFound'> {
+    async updateLikeStatus(commentId: string, userId: string, likeStatus:LikeStatus): Promise<LikeUpdateResult> {
         const comment = await CommentModel.findById(commentId);
-        if (!comment) return 'NotFound';
+        if (!comment) return LikeUpdateResult.NotFound;
 
         const existing = await CommentLikeModel.findOne({ commentId: comment._id.toString(), userId });
-        if (existing && existing.status === likeStatus) return 'NoChange';
+        if (existing && existing.status === likeStatus) return LikeUpdateResult.NoChange;
 
         if (existing) {
-            if (likeStatus === 'None') {
+            if (likeStatus === LikeStatus.None) {
                 await existing.deleteOne();
             } else {
                 existing.status = likeStatus;
                 existing.addedAt = new Date();
                 await existing.save();
             }
-        } else if (likeStatus !== 'None') {
+        } else if (likeStatus !== LikeStatus.None) {
             await CommentLikeModel.create({ 
                 commentId: comment._id.toString(), 
                 userId, 
@@ -55,7 +55,7 @@ export class CommentService  {
         }
 
         await CommentModel.updateLikeCounters(comment._id.toString());
-        return 'Updated';
+        return LikeUpdateResult.Updated;
     }
 
 }
